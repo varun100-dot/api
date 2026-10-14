@@ -13,8 +13,16 @@ export const config = {
   csrfSecret: process.env.CSRF_SECRET || 'dev_csrf_secret_digitons_dev_4d812a67e912c9b4',
 
   // Database & storage
-  dbPath: path.resolve(process.cwd(), process.env.DB_PATH || './data/sales_platform.db'),
-  uploadDir: path.resolve(process.cwd(), process.env.UPLOAD_DIR || './uploads/payment_proofs'),
+  dbPath: process.env.DB_PATH
+    ? path.resolve(process.cwd(), process.env.DB_PATH)
+    : process.env.VERCEL
+    ? '/tmp/sales_platform.db'
+    : path.resolve(process.cwd(), './data/sales_platform.db'),
+  uploadDir: process.env.UPLOAD_DIR
+    ? path.resolve(process.cwd(), process.env.UPLOAD_DIR)
+    : process.env.VERCEL
+    ? '/tmp/uploads'
+    : path.resolve(process.cwd(), './uploads/payment_proofs'),
 
   // Commercial configuration
   commercial: {
