@@ -19,7 +19,7 @@ Built with a full-stack TypeScript architecture, resilient synchronous SQLite st
 | **Payee UPI ID** | `varunchauhan1998@ybl` |
 | **Payee Display Name**| `API Section` |
 | **Activation Policy**| License is issued and activated **exclusively** after an administrator verifies the bank UTR / payment proof |
-| **Technical Support** | `support@apisection.com` |
+| **Official Website** | [https://apisection.vercel.app/](https://apisection.vercel.app/) |
 
 ---
 

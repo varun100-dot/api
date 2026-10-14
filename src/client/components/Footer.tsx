@@ -1,5 +1,5 @@
 import React from 'react';
-import { Mail, Layers, ShieldCheck } from 'lucide-react';
+import { Globe, Layers, ShieldCheck } from 'lucide-react';
 
 interface FooterProps {
   onToggleAdmin: () => void;
@@ -23,8 +23,8 @@ export const Footer: React.FC<FooterProps> = ({ onToggleAdmin }) => {
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '0.85rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#475569' }}>
-            <Mail size={14} />
-            <span>Support: <strong>support@apisection.com</strong></span>
+            <Globe size={14} style={{ color: '#4f46e5' }} />
+            <span>Website: <a href="https://apisection.vercel.app/" target="_blank" rel="noopener noreferrer" style={{ color: '#4f46e5', fontWeight: 600, textDecoration: 'none' }}>https://apisection.vercel.app/</a></span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#475569' }}>
             <ShieldCheck size={14} style={{ color: '#059669' }} />

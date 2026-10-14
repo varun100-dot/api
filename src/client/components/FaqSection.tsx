@@ -26,8 +26,8 @@ export const FaqSection: React.FC = () => {
       a: 'This sales portal acts as the authoritative licensing registry, customer account portal, and administrative verification system. Domain enforcement and license authorization in client applications are implemented by providing your issued license key into the editor initialization configuration.',
     },
     {
-      q: 'Who do I contact if I have technical questions or need payment assistance?',
-      a: 'You can contact API Section directly at support@apisection.com. Please include your order reference number (DIG-ORD-...) in all communications.',
+      q: 'Where can I access the official API platform and track my orders?',
+      a: 'You can access the official API Section portal directly at https://apisection.vercel.app/. Sign in to your account anytime to check active licenses, track remaining days, and access digital tax bills.',
     },
   ];
 

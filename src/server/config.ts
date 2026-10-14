@@ -37,6 +37,7 @@ export const config = {
     upiId: 'varunchauhan1998@ybl',
     upiPayeeName: 'API Section',
     activationTerms: 'License activation is processed exclusively after administrative verification of the payment reference / UTR.',
-    supportEmail: process.env.SUPPORT_EMAIL || 'support@apisection.com',
+    websiteUrl: 'https://apisection.vercel.app/',
+    supportEmail: process.env.SUPPORT_EMAIL || 'https://apisection.vercel.app/',
   },
 };

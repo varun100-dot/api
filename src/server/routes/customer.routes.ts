@@ -215,7 +215,7 @@ customerRouter.get('/me', requireCustomerAuth, (req: Request, res: Response) => 
           brand: config.commercial.brandName,
           upiId: config.commercial.upiId,
           payeeName: config.commercial.upiPayeeName,
-          supportEmail: config.commercial.supportEmail,
+          websiteUrl: config.commercial.websiteUrl,
         },
         customer: {
           name: ord.customer_name,

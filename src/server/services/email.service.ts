@@ -100,7 +100,6 @@ export function generateInvoiceHtml(data: InvoiceEmailData): string {
         <div class="meta-col">
           <div class="meta-label">Billed To:</div>
           <strong>${data.customerName}</strong><br>
-          ${data.customerEmail}<br>
           Authorized Domain: <strong>${data.domain}</strong>
         </div>
         <div class="meta-col" style="text-align: right;">
@@ -175,7 +174,7 @@ export function generateInvoiceHtml(data: InvoiceEmailData): string {
 
     <div class="email-footer">
       This is a computer-generated digital tax invoice issued by <strong>API Section</strong> (SAC 997331). No physical signature is required.<br>
-      For technical support or billing inquiries: <a href="mailto:${config.commercial.supportEmail}" style="color: #4f46e5; text-decoration: none;">${config.commercial.supportEmail}</a><br>
+      Official Commercial Licensing Portal: <a href="https://apisection.vercel.app/" style="color: #4f46e5; text-decoration: none;">https://apisection.vercel.app/</a><br>
       © ${new Date().getFullYear()} API Section. All rights reserved.
     </div>
   </div>

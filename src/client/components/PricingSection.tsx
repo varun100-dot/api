@@ -62,7 +62,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onOpenPurchase }
               </li>
               <li className="pricing-feature-item">
                 <Check size={18} className="pricing-feature-check" />
-                <span><strong>Dedicated Developer Support:</strong> Technical guidance via <code>support@apisection.com</code>.</span>
+                <span><strong>Official Commercial Web Portal:</strong> Accessible at <code>https://apisection.vercel.app/</code>.</span>
               </li>
               <li className="pricing-feature-item">
                 <Check size={18} className="pricing-feature-check" />
