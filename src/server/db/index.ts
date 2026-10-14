@@ -36,6 +36,24 @@ export function getDatabase(customPath?: string): DatabaseSync {
   // Run schema migrations
   db.exec(SCHEMA_SQL);
 
+  // Auto-seed initial admin if table is empty (ensures admin works on fresh Vercel /tmp databases)
+  try {
+    const adminCheck = db.prepare('SELECT count(*) as count FROM admins').get() as { count: number } | undefined;
+    if (adminCheck && adminCheck.count === 0) {
+      db.prepare(`
+        INSERT INTO admins (username, email, password_hash, created_at)
+        VALUES (?, ?, ?, ?)
+      `).run(
+        process.env.ADMIN_USERNAME || 'digitons_admin',
+        process.env.ADMIN_EMAIL || 'admin@apisection.vercel.app',
+        'scrypt$7e34ae69198d1aef3745978b80dedb26$c8b88498ea00c5725dbf184502d372a571cf5e85ce29a960aa563ace8b78faf5b62ade87af967119fc3af8619bd90a7479ec0023593ecc0e5ea3545c848929ed',
+        new Date().toISOString()
+      );
+    }
+  } catch {
+    // Ignore if table schema in transition
+  }
+
   if (!customPath) {
     dbInstance = db;
   }
