@@ -13,6 +13,7 @@ import { authRateLimiter } from '../middleware/rate-limiter.js';
 import { recordAuditLog } from '../services/audit.service.js';
 import { LicenseRecord } from '../services/license.service.js';
 import { OrderRecord } from '../services/order.service.js';
+import { sendInvoiceEmail } from '../services/email.service.js';
 
 export const customerRouter = Router();
 
@@ -263,3 +264,64 @@ customerRouter.get('/me', requireCustomerAuth, (req: Request, res: Response) => 
     res.status(500).json({ error: 'Profile fetch failed', message });
   }
 });
+
+/**
+ * Send official invoice directly to the customer's email address
+ */
+customerRouter.post('/invoices/:orderRef/email', requireCustomerAuth, async (req: Request, res: Response) => {
+  try {
+    const customer = req.customer!;
+    const orderRef = req.params.orderRef;
+    const db: DatabaseSync = req.db!;
+
+    const orderStmt = db.prepare('SELECT * FROM orders WHERE order_ref = ? AND customer_email = ?');
+    const order = orderStmt.get(orderRef, customer.email.toLowerCase()) as OrderRecord | undefined;
+
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found', message: 'No matching order found for this invoice.' });
+    }
+
+    // Find associated license key if approved
+    const licStmt = db.prepare('SELECT license_key FROM licenses WHERE domain = ? AND customer_email = ? AND status = ? LIMIT 1');
+    const lic = licStmt.get(order.domain, customer.email.toLowerCase(), 'active') as { license_key: string } | undefined;
+
+    const baseAmount = Number((order.amount_inr / 1.18).toFixed(2));
+    const taxAmount = Number((order.amount_inr - baseAmount).toFixed(2));
+    const cgst = Number((taxAmount / 2).toFixed(2));
+    const sgst = Number((taxAmount - cgst).toFixed(2));
+
+    const emailResult = await sendInvoiceEmail({
+      customerName: customer.name,
+      customerEmail: customer.email,
+      invoiceNumber: `INV-${order.order_ref}`,
+      orderRef: order.order_ref,
+      domain: order.domain,
+      date: order.reviewed_at || order.created_at,
+      subtotalINR: baseAmount,
+      taxAmountINR: taxAmount,
+      cgstINR: cgst,
+      sgstINR: sgst,
+      totalAmountINR: order.amount_inr,
+      licenseKey: lic?.license_key,
+      paymentStatus:
+        order.status === 'payment_approved'
+          ? 'Verified & Paid'
+          : order.status === 'verification_submitted'
+          ? 'Pending Verification'
+          : order.status === 'payment_rejected'
+          ? 'Rejected'
+          : 'Payment Pending',
+      utrReference: order.utr_reference,
+    });
+
+    res.json({
+      success: true,
+      message: `Tax invoice has been dispatched to ${customer.email}.`,
+      simulated: emailResult.simulated,
+    });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Failed to send invoice email';
+    res.status(500).json({ error: 'Email dispatch failed', message });
+  }
+});
+

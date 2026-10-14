@@ -23,6 +23,7 @@ import {
   renewLicense,
   listLicenses,
 } from '../services/license.service.js';
+import { sendInvoiceEmail } from '../services/email.service.js';
 import { recordAuditLog, getAuditLogs } from '../services/audit.service.js';
 
 export const adminRouter = Router();
@@ -180,9 +181,34 @@ adminRouter.post('/orders/:id/approve', requireAdminAuth, (req: Request, res: Re
 
     const result = approvePayment(db, id, req.admin!.id, ipAddress);
 
+    // Automatically dispatch official tax invoice email to customer
+    const baseAmount = Number((result.order.amount_inr / 1.18).toFixed(2));
+    const taxAmount = Number((result.order.amount_inr - baseAmount).toFixed(2));
+    const cgst = Number((taxAmount / 2).toFixed(2));
+    const sgst = Number((taxAmount - cgst).toFixed(2));
+
+    sendInvoiceEmail({
+      customerName: result.order.customer_name,
+      customerEmail: result.order.customer_email,
+      invoiceNumber: `INV-${result.order.order_ref}`,
+      orderRef: result.order.order_ref,
+      domain: result.order.domain,
+      date: result.order.reviewed_at || new Date().toISOString(),
+      subtotalINR: baseAmount,
+      taxAmountINR: taxAmount,
+      cgstINR: cgst,
+      sgstINR: sgst,
+      totalAmountINR: result.order.amount_inr,
+      licenseKey: result.license.license_key,
+      paymentStatus: 'Verified & Paid',
+      utrReference: result.order.utr_reference,
+    }).catch((err) => {
+      console.error('Failed to dispatch invoice email on admin approval:', err);
+    });
+
     res.json({
       success: true,
-      message: 'Payment approved and license generated successfully.',
+      message: 'Payment approved and license generated successfully. Invoice dispatched to customer email.',
       order: result.order,
       license: result.license,
     });

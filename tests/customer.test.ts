@@ -108,5 +108,15 @@ describe('Customer Single-Page Portal, Days Left, and Bills', () => {
     expect(inv.totalAmountINR).toBe(3499);
     expect(inv.paymentStatus).toBe('Verified & Paid');
     expect(inv.utrReference).toBe('UTR998877665544');
+
+    // 5. Test dispatching invoice to customer email
+    const emailRes = await request(app)
+      .post(`/api/customer/invoices/${order.order_ref}/email`)
+      .set('Cookie', `${csrfCookie}; ${custSession}`)
+      .set('x-xsrf-token', csrfToken);
+
+    expect(emailRes.status).toBe(200);
+    expect(emailRes.body.success).toBe(true);
+    expect(emailRes.body.message).toContain('sneha@fintech.in');
   });
 });

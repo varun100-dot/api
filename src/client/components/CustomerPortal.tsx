@@ -10,6 +10,7 @@ import {
   LogOut,
   FileText,
   CreditCard,
+  Mail,
 } from 'lucide-react';
 
 interface CustomerPortalProps {
@@ -36,10 +37,38 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({
   // Copy feedback
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
+  // Email invoice state
+  const [emailingOrder, setEmailingOrder] = useState<string | null>(null);
+  const [emailSuccessMsg, setEmailSuccessMsg] = useState<string | null>(null);
+
   const handleCopy = (key: string) => {
     navigator.clipboard.writeText(key);
     setCopiedKey(key);
     setTimeout(() => setCopiedKey(null), 2000);
+  };
+
+  const handleSendInvoiceEmail = async (orderRef: string) => {
+    setEmailingOrder(orderRef);
+    setEmailSuccessMsg(null);
+    try {
+      const res = await fetch(`/api/customer/invoices/${orderRef}/email`, {
+        method: 'POST',
+        headers: {
+          'x-xsrf-token': csrfToken,
+        },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setEmailSuccessMsg(data.message || `Tax invoice dispatched to your email.`);
+        setTimeout(() => setEmailSuccessMsg(null), 6000);
+      } else {
+        alert(data.message || 'Failed to dispatch invoice email.');
+      }
+    } catch {
+      alert('Network error while requesting invoice email.');
+    } finally {
+      setEmailingOrder(null);
+    }
   };
 
   const handleAuthSubmit = async (e: React.FormEvent) => {
@@ -316,6 +345,13 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({
                 <span>Billing History & Generate Invoice</span>
               </h3>
 
+              {emailSuccessMsg && (
+                <div className="notice-box" style={{ background: '#ecfdf5', borderColor: '#a7f3d0', color: '#065f46', marginBottom: '1.25rem' }}>
+                  <Check size={18} style={{ flexShrink: 0 }} />
+                  <span>{emailSuccessMsg}</span>
+                </div>
+              )}
+
               {customerData.invoices && customerData.invoices.length > 0 ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                   {customerData.invoices.map((inv: any) => (
@@ -492,7 +528,17 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({
                         <span style={{ fontSize: '0.8rem', color: '#64748b' }}>
                           Official API Section commercial receipt. Authorized for domain <strong>{inv.customer.domain}</strong>.
                         </span>
-                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                          <button
+                            type="button"
+                            className="btn btn-primary"
+                            style={{ fontSize: '0.85rem', padding: '0.45rem 0.9rem' }}
+                            onClick={() => handleSendInvoiceEmail(inv.orderRef)}
+                            disabled={emailingOrder === inv.orderRef}
+                          >
+                            <Mail size={15} />
+                            {emailingOrder === inv.orderRef ? 'Sending to Email...' : 'Send Invoice to Email'}
+                          </button>
                           <button
                             type="button"
                             className="btn btn-secondary"
