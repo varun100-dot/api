@@ -174,13 +174,22 @@ customerRouter.get('/me', requireCustomerAuth, (req: Request, res: Response) => 
     const customer = req.customer!;
     const db: DatabaseSync = req.db!;
 
-    // Fetch all orders matching customer email
-    const ordersStmt = db.prepare('SELECT * FROM orders WHERE customer_email = ? ORDER BY id DESC');
-    const orders = ordersStmt.all(customer.email.toLowerCase()) as unknown as OrderRecord[];
+    // Fetch all orders matching customer email (including aliased emails for zuvioglobalschool.com)
+    const emailLower = customer.email.toLowerCase();
+    const emailsToMatch = [emailLower];
+    if (emailLower === 'info@zuvioglobalschool.com') {
+      emailsToMatch.push('c.graphics00@gmail.com', 'designer@kairali.com');
+    } else if (emailLower === 'c.graphics00@gmail.com') {
+      emailsToMatch.push('info@zuvioglobalschool.com');
+    }
 
-    // Fetch all licenses matching customer email
-    const licensesStmt = db.prepare('SELECT * FROM licenses WHERE customer_email = ? ORDER BY id DESC');
-    const licenses = licensesStmt.all(customer.email.toLowerCase()) as unknown as LicenseRecord[];
+    const placeholders = emailsToMatch.map(() => '?').join(',');
+    const ordersStmt = db.prepare(`SELECT * FROM orders WHERE LOWER(customer_email) IN (${placeholders}) ORDER BY id DESC`);
+    const orders = ordersStmt.all(...emailsToMatch) as unknown as OrderRecord[];
+
+    // Fetch all licenses matching customer emails
+    const licensesStmt = db.prepare(`SELECT * FROM licenses WHERE LOWER(customer_email) IN (${placeholders}) ORDER BY id DESC`);
+    const licenses = licensesStmt.all(...emailsToMatch) as unknown as LicenseRecord[];
 
     const now = Date.now();
 
