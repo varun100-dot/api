@@ -173,7 +173,7 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({
                     id="cust-name"
                     type="text"
                     className="form-input"
-                    placeholder="e.g. Varun Chauhan"
+                    placeholder="e.g. John Doe"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
@@ -500,7 +500,6 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({
                             <li>• <strong>Service Category:</strong> SAC 997331 (Licensing services for the right to use computer software).</li>
                             <li>• <strong>Grant Scope:</strong> Single designated website domain ({inv.customer.domain}) for 365 calendar days.</li>
                             <li>• <strong>Electronic Record:</strong> This is a computer-generated digital invoice generated in compliance with electronic transaction standards. No physical signature is required.</li>
-                            <li>• <strong>Official Website:</strong> <a href="https://apisection.vercel.app/" target="_blank" rel="noopener noreferrer" style={{ color: '#4f46e5', fontWeight: 600, textDecoration: 'none' }}>https://apisection.vercel.app/</a></li>
                           </ul>
                         </div>
 

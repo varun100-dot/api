@@ -1,11 +1,8 @@
 import React, { useState } from 'react';
 import {
   X,
-  Copy,
-  Check,
   Upload,
   AlertCircle,
-  ExternalLink,
   ShieldCheck,
   Clock,
   Sparkles,
@@ -73,17 +70,8 @@ export const PurchaseModal: React.FC<PurchaseModalProps> = ({
   // Status & Feedback
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [copiedUpi, setCopiedUpi] = useState(false);
 
   if (!isOpen) return null;
-
-  const handleCopyUpi = () => {
-    if (payment?.upiId) {
-      navigator.clipboard.writeText(payment.upiId);
-      setCopiedUpi(true);
-      setTimeout(() => setCopiedUpi(false), 2000);
-    }
-  };
 
   const handleCreateOrder = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -298,22 +286,6 @@ export const PurchaseModal: React.FC<PurchaseModalProps> = ({
                     <td className="upi-info-value">{payment.payeeName}</td>
                   </tr>
                   <tr>
-                    <td className="upi-info-label">UPI ID:</td>
-                    <td className="upi-info-value">
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <span>{payment.upiId}</span>
-                        <button
-                          type="button"
-                          onClick={handleCopyUpi}
-                          style={{ background: 'transparent', color: '#818cf8', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', padding: '2px 6px', borderRadius: '4px' }}
-                        >
-                          {copiedUpi ? <Check size={12} /> : <Copy size={12} />}
-                          {copiedUpi ? 'Copied' : 'Copy'}
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
                     <td className="upi-info-label">Base Amount:</td>
                     <td className="upi-info-value">₹2,965.25 INR</td>
                   </tr>
@@ -333,17 +305,6 @@ export const PurchaseModal: React.FC<PurchaseModalProps> = ({
                   </tr>
                 </tbody>
               </table>
-
-              <div style={{ marginTop: '1rem' }}>
-                <a
-                  href={payment.upiUri}
-                  className="btn btn-secondary"
-                  style={{ width: '100%', fontSize: '0.85rem', padding: '0.6rem' }}
-                >
-                  <ExternalLink size={14} />
-                  Open in UPI App (Mobile)
-                </a>
-              </div>
             </div>
 
             <div className="notice-box">
@@ -403,7 +364,7 @@ export const PurchaseModal: React.FC<PurchaseModalProps> = ({
             <div className="notice-box" style={{ textAlign: 'left', marginBottom: '1.5rem' }}>
               <ShieldCheck size={18} style={{ flexShrink: 0, marginTop: 2 }} />
               <div>
-                <strong>Next Step:</strong> An administrator from API Section will verify the bank transaction against payee <code>varunchauhan1998@ybl</code>. Upon verification, your license key will be issued for domain <code>{domain}</code>.
+                <strong>Next Step:</strong> An administrator from API Section will verify the bank transaction. Upon verification, your license key will be issued for domain <code>{domain}</code>.
               </div>
             </div>
 

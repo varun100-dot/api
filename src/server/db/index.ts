@@ -50,6 +50,19 @@ export function getDatabase(customPath?: string): DatabaseSync {
         new Date().toISOString()
       );
     }
+
+    const customerCheck = db.prepare('SELECT id FROM customers WHERE email = ?').get('info@zuvioglobalschool.com');
+    if (!customerCheck) {
+      db.prepare(`
+        INSERT INTO customers (name, email, password_hash, created_at)
+        VALUES (?, ?, ?, ?)
+      `).run(
+        'Zuvio Global School',
+        'info@zuvioglobalschool.com',
+        'scrypt$709b036313feac060011263962c5ad29$622128d48341e756814ef694132bdb7da4092e7593eb52a924abea04b9c1367f00687d3a810711b341793fcb9fa0d13a5332bfe6df511f43fe124956c9132926',
+        new Date().toISOString()
+      );
+    }
   } catch {
     // Ignore if table schema in transition
   }

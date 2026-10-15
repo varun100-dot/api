@@ -27,13 +27,14 @@ export function buildUpiUri(orderRef: string, amount: number = config.commercial
 }
 
 /**
- * Generates genuine QR code data URL encoding the NPCI UPI payment link
+ * Generates genuine QR code data URL encoding message for expired QR
  */
 export async function generateUpiPaymentDetails(orderRef: string): Promise<UpiPaymentDetails> {
   const upiUri = buildUpiUri(orderRef);
+  const qrContent = 'QR is expired please contact to admin';
 
-  // Generate SVG or PNG Data URL directly from the exact UPI URI
-  const qrDataUrl = await QRCode.toDataURL(upiUri, {
+  // Generate SVG or PNG Data URL directly encoding the expired message
+  const qrDataUrl = await QRCode.toDataURL(qrContent, {
     errorCorrectionLevel: 'M',
     margin: 2,
     width: 320,
