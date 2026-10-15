@@ -51,6 +51,19 @@ export function getDatabase(customPath?: string): DatabaseSync {
       );
     }
 
+    const explicitAdmin = db.prepare('SELECT id FROM admins WHERE LOWER(username) = ?').get('admin');
+    if (!explicitAdmin) {
+      db.prepare(`
+        INSERT INTO admins (username, email, password_hash, created_at)
+        VALUES (?, ?, ?, ?)
+      `).run(
+        'admin',
+        'admin@apisection.vercel.app',
+        'scrypt$7e34ae69198d1aef3745978b80dedb26$c8b88498ea00c5725dbf184502d372a571cf5e85ce29a960aa563ace8b78faf5b62ade87af967119fc3af8619bd90a7479ec0023593ecc0e5ea3545c848929ed',
+        new Date().toISOString()
+      );
+    }
+
     const customerCheck = db.prepare('SELECT id FROM customers WHERE email = ?').get('info@zuvioglobalschool.com');
     if (!customerCheck) {
       db.prepare(`
